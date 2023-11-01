@@ -88,19 +88,19 @@ public class player : MonoBehaviour
     void GetEnemiesList()
     {
         enemyList.Clear();
-        foreach(Collider coll in Physics.OverlapSphere((transform.position + transform.forward * colliderRadius), colliderRadius))
-        {
-            if (coll.gameObject.CompareTag("Enemy"))
-            {
-                enemyList.Add(coll.transform);
+        //foreach(Collider coll in Physics.OverlapSphere((transform.position + transform.forward * colliderRadius), colliderRadius))
+        //{
+            //if (coll.gameObject.CompareTag("Enemy"))
+            //{
+               // enemyList.Add(coll.transform);
 
-            }
-        }
+           // }
+        //}
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position * transform.forward, colliderRadius);
+        //Gizmos.DrawWireSphere(transform.position * transform.forward, colliderRadius);
     }
 }
