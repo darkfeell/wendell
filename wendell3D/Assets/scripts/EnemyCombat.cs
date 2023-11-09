@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class EnemyCombat : MonoBehaviour
 {
     [Header("Atributes")]
-    public float totalHealth;
+    public float totalHealth = 100f;
     public float attackDamage;
     public float moveSpeed;
     public float lookRadius;
@@ -22,6 +22,7 @@ public class EnemyCombat : MonoBehaviour
     private bool walking;
     private bool attacking;
     private bool waitFor;
+    private bool takeHit;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,34 +36,38 @@ public class EnemyCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float distance = Vector3.Distance(player.position, transform.position);
-
-        if(distance <= lookRadius)
+        if(totalHealth > 0)
         {
-            meshAgent.isStopped = false;
-            if (!attacking)
+            float distance = Vector3.Distance(player.position, transform.position);
+
+            if (distance <= lookRadius)
             {
-                meshAgent.SetDestination(player.position);
-                e_anim.SetBool("Walk Forward", true);
-                walking = true;
-            }
-            
-            if(distance <= meshAgent.stoppingDistance)
-            {
-                StartCoroutine("Attack");
+                meshAgent.isStopped = false;
+                if (!attacking)
+                {
+                    meshAgent.SetDestination(player.position);
+                    e_anim.SetBool("Walk Forward", true);
+                    walking = true;
+                }
+
+                if (distance <= meshAgent.stoppingDistance)
+                {
+                    StartCoroutine("Attack");
+                }
+                else
+                {
+                    attacking = false;
+                }
             }
             else
             {
+                meshAgent.isStopped = true;
+                e_anim.SetBool("Walk Forward", false);
+                walking = false;
                 attacking = false;
             }
         }
-        else
-        {
-            meshAgent.isStopped = true;
-            e_anim.SetBool("Walk Forward", false);
-            walking = false;
-            attacking = false;
-        }
+        
     }
 
     void OnDrawGizmosSelected()
@@ -73,7 +78,7 @@ public class EnemyCombat : MonoBehaviour
 
     IEnumerator Attack()
     {
-        if (!waitFor)
+        if (!waitFor && !takeHit)
         {
             waitFor = true;
             attacking = true;
@@ -100,5 +105,29 @@ public class EnemyCombat : MonoBehaviour
 
             }
         }
+    }
+
+    public void GetHit() //aqui tinha um float damage dentro dos parenteses
+    {
+        if(totalHealth > 0)
+        {
+            StopCoroutine("Attack");
+            e_anim.SetTrigger("Take Damage");
+            takeHit = true;
+            StartCoroutine("RecoveryFromHit");
+        }
+        else
+        {
+            e_anim.SetTrigger("Die");
+        }
+    } 
+
+    IEnumerator RecoveryFromHit()
+    {
+        yield return new WaitForSeconds(1f);
+        e_anim.SetBool("Walk Forward", false);
+        e_anim.SetBool("Bite Attack", true);
+        takeHit = false;
+        waitFor = false;
     }
 }

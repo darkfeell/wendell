@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
+    public float damage = 20;
     public float speed;
     private CharacterController controller;
     Vector3 moveDirection;
@@ -46,11 +47,11 @@ public class player : MonoBehaviour
                 float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref turnSmoothVelocity, smoothRotTime);
                 transform.rotation = Quaternion.Euler(0f, smoothAngle, 0f);
                 moveDirection = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * speed;
-                anim.SetInteger("transition", 2);
+                //anim.SetInteger("transition", 2);
             }
             else
             {
-                anim.SetInteger("transition", 0);
+                anim.SetInteger("transition", 1);
                 moveDirection = Vector3.zero;
             }
         }
@@ -78,7 +79,12 @@ public class player : MonoBehaviour
 
         foreach(Transform enem in enemyList)
         {
+            EnemyCombat enemy = enem.GetComponent<EnemyCombat>();
 
+            if(enemy != null)
+            {
+                enemy.GetHit();
+            }
         }
 
         yield return new WaitForSeconds(1f);
