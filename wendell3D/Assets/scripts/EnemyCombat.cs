@@ -11,7 +11,7 @@ public class EnemyCombat : MonoBehaviour
     public float moveSpeed;
     public float lookRadius;
     public float colliderRadius;
-    //public float damage;
+    
 
     [Header("Components")]
     private Animator e_anim;
@@ -24,6 +24,12 @@ public class EnemyCombat : MonoBehaviour
     private bool attacking;
     private bool waitFor;
     private bool takeHit;
+    public bool playerIsDead;
+
+    [Header("Waypoints")]
+    public List<Transform> waypoints = new List<Transform>();
+    public int currentWaypointIndex;
+    public float pathDistance;
     // Start is called before the first frame update
     void Start()
     {
@@ -62,10 +68,11 @@ public class EnemyCombat : MonoBehaviour
             }
             else
             {
-                meshAgent.isStopped = true;
+                //meshAgent.isStopped = true;
                 e_anim.SetBool("Walk Forward", false);
                 walking = false;
                 attacking = false;
+                MoveToWaypoint();
             }
         }
         
@@ -77,9 +84,22 @@ public class EnemyCombat : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, lookRadius);
     }
 
+    void MoveToWaypoint()
+    {
+        if(waypoints.Count > 0)
+        {
+            float distance = Vector3.Distance(waypoints[currentWaypointIndex].position, transform.position);
+            meshAgent.destination = waypoints[currentWaypointIndex].position;
+            if(distance <= pathDistance)
+            {
+                currentWaypointIndex = Random.Range(0, waypoints.Count);
+            }
+        }
+    }
+
     IEnumerator Attack()
     {
-        if (!waitFor && !takeHit)
+        if (!waitFor && !takeHit && !playerIsDead)
         {
             waitFor = true;
             attacking = true;
@@ -94,6 +114,16 @@ public class EnemyCombat : MonoBehaviour
            // yield return new WaitForSeconds(1f);
             waitFor = false;
         }
+
+        if (playerIsDead)
+        {
+            e_anim.SetBool("Walk Forward", false);
+            e_anim.SetBool("Bite Attack", false);
+            walking = false;
+            attacking = false;
+            meshAgent.isStopped = true;
+
+        }
         
     }
 
@@ -103,14 +133,15 @@ public class EnemyCombat : MonoBehaviour
         {
             if (coll.gameObject.CompareTag("Player"))
             {
-                coll.gameObject.GetComponent<player>().GetHit(attackDamage);
+                coll.gameObject.GetComponent<player>().GetHit();
+                playerIsDead = coll.gameObject.GetComponent<player>().isDead;
             }
         }
     }
 
     public void GetHit() //aqui tinha um float damage dentro dos parenteses
     {
-        //totalHealth -= damage;
+        totalHealth =- attackDamage;
         if(totalHealth > 0)
         {
             StopCoroutine("Attack");

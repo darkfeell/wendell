@@ -4,22 +4,32 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
+    [Header("Floats")]
     public float damage = 20;
     public float speed;
     public float totalHealth;
     public float enemy_damage;
-    private CharacterController controller;
-    Vector3 moveDirection;
+    
+    
     public float smoothRotTime;
     private float turnSmoothVelocity;
     public float gravity;
-    private Animator anim;
+    
     public float timeToAttack;
     public float colliderRadius;
-    public List<Transform> enemyList = new List<Transform>();
-    public Transform cam;
+    
+    
+    [Header("Booleans")]
     private bool waitFor;
     private bool takingHit;
+    public bool isDead;
+    [Header("Other")]
+    private Animator anim;
+    public Transform cam;
+    public List<Transform> enemyList = new List<Transform>();
+    Vector3 moveDirection;
+    private CharacterController controller;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,7 +41,12 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Move();
+        if (!isDead)
+        {
+            Move();
+            GetMouseInput();
+        }
+        
     }
 
 
@@ -106,7 +121,7 @@ public class player : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
             anim.SetInteger("transition", 1);
             waitFor = false;
         }
@@ -144,6 +159,7 @@ public class player : MonoBehaviour
         }
         else
         {
+           isDead = true;
            anim.SetTrigger("die");
         }
     }

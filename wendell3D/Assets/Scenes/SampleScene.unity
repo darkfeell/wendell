@@ -1730,7 +1730,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687200909}
-  m_LocalRotation: {x: 0.37384796, y: -0.000000015958747, z: 0.00000000643257, w: 0.92749006}
+  m_LocalRotation: {x: 0.37384796, y: 0.000000015958747, z: -0.00000000643257, w: 0.92749006}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1998,12 +1998,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 20
   speed: 5
+  totalHealth: 50
+  enemy_damage: 10
   smoothRotTime: 0.2
   gravity: 150
   timeToAttack: 0
   colliderRadius: 1.14
-  enemyList: []
+  isDead: 0
   cam: {fileID: 963194228}
+  enemyList: []
 --- !u!1 &807360584 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 123434, guid: c87a99b4c24b9ce48bac40727eb1ecb6, type: 3}
@@ -2149,7 +2152,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 861359343}
-  m_LocalRotation: {x: 0.40729225, y: -3e-45, z: 1e-45, w: 0.9132979}
+  m_LocalRotation: {x: 0.40729225, y: 1e-45, z: -0, w: 0.9132979}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4605,7 +4608,11 @@ MonoBehaviour:
   attackDamage: 10
   moveSpeed: 3
   lookRadius: 5
-  colliderRadius: 0
+  colliderRadius: 3
+  playerIsDead: 0
+  waypoints: []
+  currentWaypointIndex: 0
+  pathDistance: 3
 --- !u!1001 &1784112205
 PrefabInstance:
   m_ObjectHideFlags: 0
