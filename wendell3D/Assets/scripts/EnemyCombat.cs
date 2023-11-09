@@ -11,6 +11,7 @@ public class EnemyCombat : MonoBehaviour
     public float moveSpeed;
     public float lookRadius;
     public float colliderRadius;
+    //public float damage;
 
     [Header("Components")]
     private Animator e_anim;
@@ -102,13 +103,14 @@ public class EnemyCombat : MonoBehaviour
         {
             if (coll.gameObject.CompareTag("Player"))
             {
-
+                coll.gameObject.GetComponent<player>().GetHit(attackDamage);
             }
         }
     }
 
     public void GetHit() //aqui tinha um float damage dentro dos parenteses
     {
+        //totalHealth -= damage;
         if(totalHealth > 0)
         {
             StopCoroutine("Attack");

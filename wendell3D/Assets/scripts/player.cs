@@ -6,6 +6,8 @@ public class player : MonoBehaviour
 {
     public float damage = 20;
     public float speed;
+    public float totalHealth;
+    public float enemy_damage;
     private CharacterController controller;
     Vector3 moveDirection;
     public float smoothRotTime;
@@ -16,6 +18,8 @@ public class player : MonoBehaviour
     public float colliderRadius;
     public List<Transform> enemyList = new List<Transform>();
     public Transform cam;
+    private bool waitFor;
+    private bool takingHit;
     // Start is called before the first frame update
     void Start()
     {
@@ -47,7 +51,7 @@ public class player : MonoBehaviour
                 float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref turnSmoothVelocity, smoothRotTime);
                 transform.rotation = Quaternion.Euler(0f, smoothAngle, 0f);
                 moveDirection = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * speed;
-                //anim.SetInteger("transition", 2);
+                anim.SetInteger("transition", 2);
             }
             else
             {
@@ -66,29 +70,47 @@ public class player : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                StartCoroutine("Attack");
+                if (anim.GetBool("walking"))
+                {
+                    anim.SetBool("walking", false);
+                    anim.SetInteger("transition", 1);
+                }
+                if(!anim.GetBool("walking"))
+                {
+                    StartCoroutine("Attack");
+                }
+                
             }
+            
+            
         }
     }
 
     IEnumerator Attack()
     {
-        //anim.SetInteger("transition", 3); animação atacando
-        yield return new WaitForSeconds(timeToAttack);
-        GetEnemiesList();
-
-        foreach(Transform enem in enemyList)
+        if (!waitFor && !takingHit)
         {
-            EnemyCombat enemy = enem.GetComponent<EnemyCombat>();
+            waitFor = true;
+            anim.SetBool("attacking", true);
+            anim.SetInteger("transition", 3);
+            yield return new WaitForSeconds(timeToAttack);
+            GetEnemiesList();
 
-            if(enemy != null)
+            foreach (Transform enem in enemyList)
             {
-                enemy.GetHit();
-            }
-        }
+                EnemyCombat enemy = enem.GetComponent<EnemyCombat>();
 
-        yield return new WaitForSeconds(1f);
-        //anim.SetInteger("transition", 0); animação parado
+                if (enemy != null)
+                {
+                    enemy.GetHit();
+                }
+            }
+
+            yield return new WaitForSeconds(1f);
+            anim.SetInteger("transition", 1);
+            waitFor = false;
+        }
+        
     }
 
     void GetEnemiesList()
@@ -108,5 +130,31 @@ public class player : MonoBehaviour
     {
         Gizmos.color = Color.red;
         //Gizmos.DrawWireSphere(transform.position * transform.forward, colliderRadius);
+    }
+
+    public void GetHit() //aqui tinha um float damage dentro dos parenteses
+    {
+        totalHealth -= enemy_damage;
+        if (totalHealth > 0)
+        {
+            StopCoroutine("Attack");
+            anim.SetInteger("transition", 4);
+            takingHit = true;
+            StartCoroutine("RecoveryFromHit");
+        }
+        else
+        {
+           anim.SetTrigger("die");
+        }
+    }
+
+    IEnumerator RecoveryFromHit()
+    {
+        yield return new WaitForSeconds(1f);
+
+        anim.SetInteger("transition", 1);
+        takingHit = false;
+        anim.SetBool("attacking", false);
+        
     }
 }
