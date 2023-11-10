@@ -29,6 +29,7 @@ public class player : MonoBehaviour
     public List<Transform> enemyList = new List<Transform>();
     Vector3 moveDirection;
     private CharacterController controller;
+    public AudioSource attack;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +37,7 @@ public class player : MonoBehaviour
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         cam = Camera.main.transform;
+        attack = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -108,6 +110,7 @@ public class player : MonoBehaviour
             waitFor = true;
             anim.SetBool("attacking", true);
             anim.SetInteger("transition", 3);
+            attack.Play();
             yield return new WaitForSeconds(timeToAttack);
             GetEnemiesList();
 

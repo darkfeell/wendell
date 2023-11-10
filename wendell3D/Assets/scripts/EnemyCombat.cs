@@ -25,6 +25,7 @@ public class EnemyCombat : MonoBehaviour
     private bool waitFor;
     private bool takeHit;
     public bool playerIsDead;
+    public AudioSource soundAttack;
 
     [Header("Waypoints")]
     public List<Transform> waypoints = new List<Transform>();
@@ -38,6 +39,7 @@ public class EnemyCombat : MonoBehaviour
         meshAgent = GetComponent<NavMeshAgent>();
 
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        soundAttack = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -106,6 +108,7 @@ public class EnemyCombat : MonoBehaviour
             walking = false;
             e_anim.SetBool("Walk Forward", false);
             e_anim.SetBool("Bite Attack", true);
+            soundAttack.Play();
             yield return new WaitForSeconds(1.2f);
 
             GetPlayer();
